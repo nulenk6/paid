@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>91Club Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00e676;
+            --secondary: #2979ff;
+            --dark: #121212;
+            --darker: #0a0a0a;
+            --light: #e0e0e0;
+            --danger: #ff3d00;
+            --warning: #ffab00;
+            --success: #00c853;
+            --info: #00b0ff;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--dark);
+            margin: 0;
+            padding: 0;
+            color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        
+        .header {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo .pulse {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 230, 118, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .status-items {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        
+        .online { background-color: var(--success); }
+        .offline { background-color: var(--danger); }
+        .syncing { background-color: var(--warning); }
+        
+        .current-time {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        /* New Registration Container */
+        .register-container {
+            background-color: rgba(255, 61, 0, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .register-warning {
+            color: var(--danger);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .register-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .register-btn:hover {
+            background-color: #e63500;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .panel {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            color: var(--primary);
+            margin: 0;
+        }
+        
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: none;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: black;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .prediction-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .prediction-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .number-category {
+            font-size: 18px;
+            background-color: rgba(0, 230, 118, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .prediction-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .meta-label {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        
+        .meta-value {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .win { color: var(--success); }
+        .loss { color: var(--danger); }
+        
+        .confidence-meter {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .confidence-level {
+            height: 100%;
+            background: linear-gradient(90deg, var(--danger), var(--warning), var(--success));
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+        
+        .timer-display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            text-align: center;
+            margin: 15px 0;
+            color: var(--secondary);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        
+        .data-table th {
+            background-color: rgba(0,0,0,0.3);
+            padding: 8px;
+            text-align: left;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 11px;
+        }
+        
+        .data-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background-color: rgba(0, 200, 83, 0.2);
+            color: var(--success);
+        }
+        
+        .badge-danger {
+            background-color: rgba(255, 61, 0, 0.2);
+            color: var(--danger);
+        }
+        
+        .badge-info {
+            background-color: rgba(0, 176, 255, 0.2);
+            color: var(--info);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 8px;
+        }
+        
+        .pagination button {
+            padding: 6px 12px;
+            background-color: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        
+        .pagination button:hover {
+            background-color: var(--secondary);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        
+        .telegram-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background-color: #0088cc;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            margin-top: 15px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .telegram-btn:hover {
+            background-color: #0077b5;
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Logo styling */
+        .app-logo {
+            max-width: 120px;
+            height: auto;
+            margin: 15px auto;
+            display: block;
+        }
+        
+        /* Registration section styling */
+        .registration-section {
+            text-align: center;
+            margin: 30px 0 20px;
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .registration-text {
+            color: var(--light);
+            font-size: 14px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        .registration-button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .registration-button:hover {
+            background-color: #1a67f2;
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (min-width: 768px) {
+            .container {
+                padding: 20px;
+                max-width: 1200px;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .logo {
+                font-size: 24px;
+            }
+            
+            .status-bar {
+                font-size: 14px;
+            }
+            
+            .current-time {
+                font-size: 14px;
+            }
+
+            .register-container {
+                padding: 15px;
+            }
+
+            .register-warning {
+                font-size: 16px;
+            }
+
+            .register-btn {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            
+            .panel-title {
+                font-size: 16px;
+            }
+            
+            .prediction-value {
+                font-size: 48px;
+            }
+            
+            .number-category {
+                font-size: 24px;
+            }
+            
+            .timer-display {
+                font-size: 32px;
+            }
+            
+            .data-table {
+                font-size: 14px;
+            }
+            
+            .data-table th {
+                font-size: 12px;
+            }
+            
+            .registration-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">
+                    <div class="pulse"></div>
+                    91Club Live Prediction
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-items">
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
+                        <span>Online</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator syncing"></div>
+                        <span>Syncing</span>
+                    </div>
+                </div>
+                <div class="current-time" id="currentTime">
+                    <!-- Time will be inserted by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- App Logo -->
+        <img src="logo1.png" alt="91Club Logo" class="app-logo">
+        
+        <div class="dashboard">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">LIVE PREDICTION ENGINE</h3>
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="refreshBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="prediction-display">
+                    <div class="meta-label">NEXT PREDICTION</div>
+                    <div class="prediction-value" id="predictedNumber">
+                        <span id="predictedNumValue">--</span>
+                        <span class="number-category" id="predictedCategory">--</span>
+                    </div>
+                    <div class="prediction-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Confidence</div>
+                            <div class="meta-value" id="predictedConfidence">--%</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Next Round</div>
+                            <div class="meta-value" id="timeRemaining">--:--</div>
+                        </div>
+                    </div>
+                    <div class="confidence-meter">
+                        <div class="confidence-level" id="confidenceBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value win" id="winRate">--%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value win" id="winCount">0</div>
+                        <div class="stat-label">Wins</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value loss" id="lossCount">0</div>
+                        <div class="stat-label">Losses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalPredictions">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">LATEST RESULTS</h3>
+                    <div class="panel-actions">
+                        <button class="btn btn-secondary" id="viewAllBtn">View All</button>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Issue No.</th>
+                            <th>Number</th>
+                            <th>Color</th>
+                            <th>Premium</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTable">
+                        <!-- Data will be inserted by JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">PREDICTION HISTORY</h3>
+                    <div class="panel-actions">
+                        <button class="btn btn-secondary" id="clearHistoryBtn">Clear</button>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Issue No.</th>
+                            <th>Predicted</th>
+                            <th>Actual</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="predictionHistoryTable">
+                        <!-- Data will be inserted by JS -->
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <button id="prevPage" disabled>Previous</button>
+                    <button id="nextPage" disabled>Next</button>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">SYSTEM INFORMATION</h3>
+                </div>
+                
+                <div style="margin-top: 10px;">
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
+                        <span>Prediction Engine: <strong>Active</strong></span>
+                    </div>
+                    <div class="status-item" style="margin-top: 8px;">
+                        <div class="status-indicator syncing"></div>
+                        <span>Data Sync: <strong>Real-time</strong></span>
+                    </div>
+                    <div class="status-item" style="margin-top: 8px;">
+                        <div class="status-indicator online"></div>
+                        <span>Algorithm: <strong>Updated Data Capturing</strong></span>
+                    </div>
+                    
+                    <a href="javascript:void(0)" onclick="openInBrowser('https://t.me/EarningScripter1')" class="telegram-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 2.9c-1.9-.9-9.5-.8-12.4-.8-1.4 0-3 .2-3.3.3-.8.1-1.6.8-1.7 1.6-.3 1.6-.6 4.3-.8 6.7v.3c.1 2.1.3 4.3.5 6.4.1.8.7 1.5 1.5 1.6 1.5.3 3.8.5 6.1.6.4 0 .8 0 1.2.1.8.1 1.5.8 1.6 1.6.1.5.2 1 .3 1.5.1.8.7 1.4 1.5 1.5h.3c1.9-.3 4.7-.8 6.3-1.1.8-.1 1.4-.8 1.5-1.6.5-3.3 1.3-9.6 1.6-12.1.1-.8-.3-1.7-1.1-2.1zM8.3 13.8s-3.5.1-4.8.3c-.2 0-.4.1-.4-.1-.1-.2 0-.4.1-.5l7.5-6.8c.2-.2.5-.2.7 0 .2.2.2.5 0 .7L8.3 13.8zm2.6 3.1l-1.8-1.5 8.1-7.3c.2-.2.5-.2.7 0 .2.2.2.5 0 .7l-7 8.1zm4.1-1.2c-.2.2-.5.2-.7 0 l-1.4-1.4 1.9-2.2 1.4 1.4c.2.2.2.5 0 .7l-.7.7.1-.2z"></path></svg>
+                        Join Telegram
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Registration Section -->
+        <div class="registration-section">
+            <p class="registration-text">For long term profit, register a new account by clicking on below button.</p>
+            <button class="registration-button" onclick="openInBrowser('https://colorsignup.github.io/ES1/91club')">Register</button>
+        </div>
+    </div>
+
+<script>
+// Function to open URL in external browser
+function openInBrowser(url) {
+    // This will be handled by Android WebView's shouldOverrideUrlLoading
+    window.open(url, '_system');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM Elements
+    const dataTableBody = document.querySelector('#dataTable');
+    const predictedNumValue = document.getElementById('predictedNumValue');
+    const predictedCategoryElement = document.getElementById('predictedCategory');
+    const predictedConfidenceElement = document.getElementById('predictedConfidence');
+    const confidenceBar = document.getElementById('confidenceBar');
+    const timerElement = document.getElementById('timeRemaining');
+    const historyTableBody = document.querySelector('#predictionHistoryTable');
+    const prevPageButton = document.getElementById('prevPage');
+    const nextPageButton = document.getElementById('nextPage');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const currentTimeElement = document.getElementById('currentTime');
+    const winRateElement = document.getElementById('winRate');
+    const winCountElement = document.getElementById('winCount');
+    const lossCountElement = document.getElementById('lossCount');
+    const totalPredictionsElement = document.getElementById('totalPredictions');
+    const viewAllBtn = document.getElementById('viewAllBtn');
+    
+    // Data variables
+    let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
+    let lastPrediction = JSON.parse(localStorage.getItem('lastPrediction'));
+    let currentPrediction = JSON.parse(localStorage.getItem('currentPrediction'));
+    let currentPage = 0;
+    const itemsPerPage = 5;
+    let timerInterval;
+    let timeUpdateInterval;
+    let historicalData = [];
+    let lastMinute = -1;
+    
+    // Initialize
+    updateCurrentTime();
+    timeUpdateInterval = setInterval(updateCurrentTime, 1000);
+    updateStats();
+    updateDataAndPrediction();
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+    
+    // Event listeners
+    refreshBtn.addEventListener('click', updateDataAndPrediction);
+    clearHistoryBtn.addEventListener('click', clearHistory);
+    prevPageButton.addEventListener('click', goToPrevPage);
+    nextPageButton.addEventListener('click', goToNextPage);
+    viewAllBtn.addEventListener('click', () => {
+        openInBrowser('https://t.me/EarningScripter1');
+    });
+    
+    // Functions
+    function updateCurrentTime() {
+        const now = new Date();
+        const options = { 
+            timeZone: 'Asia/Kolkata', 
+            hour12: true,
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        };
+        currentTimeElement.textContent = now.toLocaleTimeString('en-IN', options);
+        
+        // Check if minute changed to trigger refresh
+        const currentMinute = now.getMinutes();
+        if (currentMinute !== lastMinute) {
+            lastMinute = currentMinute;
+            updateDataAndPrediction();
+        }
+    }
+    
+    function updateStats() {
+        const total = predictionHistory.length;
+        const wins = predictionHistory.filter(p => p.result === 'Win').length;
+        const losses = total - wins;
+        const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
+        
+        winRateElement.textContent = `${winRate}%`;
+        winCountElement.textContent = wins;
+        lossCountElement.textContent = losses;
+        totalPredictionsElement.textContent = total;
+        
+        // Color coding for win rate
+        winRateElement.className = 'stat-value ' + (
+            winRate >= 70 ? 'win' : 
+            winRate >= 50 ? 'warning' : 
+            'loss'
+        );
+    }
+    
+    function fetchWinGoData() {
+        return fetch('api-proxy.php')
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return { data: { list: [] } };
+            });
+    }
+
+    function categorizeNumber(number) {
+        if (number >= 0 && number <= 4) return 'Small';
+        if (number >= 5 && number <= 9) return 'Big';
+        return 'Unknown';
+    }
+
+    function generateRandomPrediction() {
+        // 50-50 chance for Big or Small
+        const isBig = Math.random() > 0.5;
+        const randomNumber = isBig ? 
+            Math.floor(Math.random() * 5) + 5 : // Big numbers (5-9)
+            Math.floor(Math.random() * 5);     // Small numbers (0-4)
+            
+        return {
+            number: randomNumber,
+            category: categorizeNumber(randomNumber),
+            confidence: Math.floor(Math.random() * 41) + 50 // Random confidence between 50-90%
+        };
+    }
+
+    function updateDataAndPrediction() {
+        // Show loading state
+        dataTableBody.innerHTML = '<tr class="loading"><td colspan="4">Loading data...</td></tr>';
+        
+        fetchWinGoData()
+            .then(data => {
+                const list = data.data.list;
+                dataTableBody.innerHTML = '';
+                
+                if (!list || list.length === 0) {
+                    dataTableBody.innerHTML = '<tr><td colspan="4">No data available</td></tr>';
+                    return;
+                }
+                
+                // Update latest results table
+                list.slice(0, 5).forEach(item => {
+                    const numberCategory = categorizeNumber(Number(item.number));
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.issueNumber}</td>
+                        <td><strong>${item.number}</strong> (${numberCategory})</td>
+                        <td>${item.color}</td>
+                        <td>${item.premium}</td>
+                    `;
+                    dataTableBody.appendChild(row);
+                });
+
+                const latestIssue = list[0].issueNumber;
+                const latestActual = Number(list[0].number);
+                const actualCategory = categorizeNumber(latestActual);
+
+                if (!lastPrediction || lastPrediction.issueNumber !== latestIssue) {
+                    if (lastPrediction) {
+                        const result = (lastPrediction.category === actualCategory) ? 'Win' : 'Loss';
+                        predictionHistory.unshift({
+                            issueNumber: latestIssue,
+                            predictedNumber: lastPrediction.number,
+                            actualNumber: latestActual,
+                            result: result
+                        });
+                        
+                        // Keep only the last 50 predictions
+                        if (predictionHistory.length > 50) {
+                            predictionHistory = predictionHistory.slice(0, 50);
+                        }
+                        localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
+                        updateStats();
+                    }
+
+                    // Get new random prediction
+                    currentPrediction = generateRandomPrediction();
+                    currentPrediction.issueNumber = latestIssue;
+                    localStorage.setItem('currentPrediction', JSON.stringify(currentPrediction));
+                }
+
+                // Update prediction display
+                predictedNumValue.textContent = currentPrediction.number;
+                predictedCategoryElement.textContent = currentPrediction.category;
+                predictedConfidenceElement.textContent = `${currentPrediction.confidence}%`;
+                confidenceBar.style.width = `${currentPrediction.confidence}%`;
+                
+                // Color code confidence
+                const confidence = currentPrediction.confidence;
+                if (confidence >= 70) {
+                    confidenceBar.style.backgroundColor = 'var(--success)';
+                } else if (confidence >= 50) {
+                    confidenceBar.style.backgroundColor = 'var(--warning)';
+                } else {
+                    confidenceBar.style.backgroundColor = 'var(--danger)';
+                }
+
+                lastPrediction = {
+                    issueNumber: latestIssue,
+                    number: currentPrediction.number,
+                    category: currentPrediction.category
+                };
+                localStorage.setItem('lastPrediction', JSON.stringify(lastPrediction));
+
+                updatePredictionHistoryTable();
+            })
+            .catch(error => {
+                console.error('Error updating data:', error);
+                dataTableBody.innerHTML = '<tr><td colspan="4">Error loading data</td></tr>';
+            });
+    }
+
+    function updatePredictionHistoryTable() {
+        historyTableBody.innerHTML = '';
+
+        const start = currentPage * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginatedHistory = predictionHistory.slice(start, end);
+
+        if (paginatedHistory.length === 0) {
+            historyTableBody.innerHTML = '<tr><td colspan="4">No prediction history yet</td></tr>';
+            return;
+        }
+
+        paginatedHistory.forEach(entry => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${entry.issueNumber}</td>
+                <td>${entry.predictedNumber} (${categorizeNumber(entry.predictedNumber)})</td>
+                <td>${entry.actualNumber} (${categorizeNumber(entry.actualNumber)})</td>
+                <td><span class="badge ${entry.result === 'Win' ? 'badge-success' : 'badge-danger'}">${entry.result}</span></td>
+            `;
+            historyTableBody.appendChild(row);
+        });
+
+        prevPageButton.disabled = currentPage === 0;
+        nextPageButton.disabled = end >= predictionHistory.length;
+    }
+
+    function updateTimer() {
+        // For simplicity, we'll use a fixed 1-minute timer
+        // In a real implementation, you would get this from the API
+        const now = new Date();
+        const seconds = now.getSeconds();
+        const remainingSeconds = 60 - seconds;
+        
+        const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+        const secs = String(remainingSeconds % 60).padStart(2, '0');
+        
+        if (remainingSeconds <= 5) {
+            timerElement.textContent = `${minutes}:${secs}`;
+            timerElement.classList.add('blink');
+            
+            if (remainingSeconds <= 0) {
+                updateDataAndPrediction();
+            }
+        } else {
+            timerElement.classList.remove('blink');
+            timerElement.textContent = `${minutes}:${secs}`;
+        }
+    }
+
+    function clearHistory() {
+        if (confirm("Are you sure you want to clear all prediction history?")) {
+            predictionHistory = [];
+            localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
+            updatePredictionHistoryTable();
+            updateStats();
+        }
+    }
+
+    function goToPrevPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            updatePredictionHistoryTable();
+        }
+    }
+
+    function goToNextPage() {
+        if ((currentPage + 1) * itemsPerPage < predictionHistory.length) {
+            currentPage++;
+            updatePredictionHistoryTable();
+        }
+    }
+});
+</script>
+</body>
+</html>
